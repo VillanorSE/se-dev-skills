@@ -10,6 +10,7 @@ Tags: **[HARD]** verified in source/real files, **[SOFT]** inferred, **[UNVERIFI
 | Restriction on an armor/conveyor/wheel block does nothing | not a terminal block, never listed **[HARD]** | `br_coverage.py CFG MODDIR` |
 | EC entry ignored | that block's mod is not loaded in the world **[HARD]** | log: "Unable to retrieve MyCubeBlockDefinition" |
 | Restricted block appears in the G-menu for you | you are admin with copy-paste/creative allowed **[HARD]** | see `mechanics.md` (`allowAdmin`) |
+| Restrictions enforce in Creative but not Survival, same cfg | `CreativeModeAllowed` only gates true Creative mode; a Promoted/Admin owner with copy-paste rights bypasses unconditionally in Survival - no cfg toggle closes it **[HARD]** | see `mechanics.md` ("Counter-intuitive Survival case"); test as non-admin, or toggle off your own copy-paste/creative-tools rights, before trusting a Survival test |
 | Restriction on `BasicAssembler` does nothing | hard-coded exception **[HARD]** | log: "cannot be restricted" |
 | NPC/encounter grids lose blocks on spawn | `AllowedForNPC` or `AllowedForUnowned` false for a block they use **[SOFT]** | `br_cfg.py list --changed` |
 | Config edits vanish | mod rewrites cfg from memory **[SOFT]** | edit with the world closed |

@@ -20,6 +20,14 @@ File references are to the mod's `Data\Scripts\BlockRestrictions\` folder (`BR` 
 - `allowAdmin` = copy-paste enabled AND creative enabled AND (world is not Creative mode OR `CreativeModeAllowed`).
   "Creative enabled" = creative game mode, or creative rights plus copy-paste. **[HARD]** (`BR:823`, `Utilities.CheckCreativeTools`)
 - Consequence: in a Creative-mode world restrictions still bind unless an admin runs `/br creativeallowed true`. **[SOFT]** (follows from the formula)
+- **Counter-intuitive Survival case:** the same `(world is not Creative mode OR CreativeModeAllowed)` term is trivially true whenever
+  `Session.CreativeMode` is `false` (i.e. in Survival), so the bypass there collapses to just "copy-paste enabled AND creative enabled" -
+  `CreativeModeAllowed` has **no effect in Survival**, only in true Creative mode. **[HARD]** (formula above; the identical gate is re-derived
+  independently for grid enforcement as `creativeAllowed` in `Entity.cs:374`, and for the toolbar in `allowAdmin`, `BR:823`).
+  Testers expect the opposite (assume Creative is the "no rules" mode and Survival enforces strictly); in practice a Promoted/Admin
+  player testing in Survival with copy-paste rights active bypasses restrictions with no cfg toggle available to close it - only
+  `/br creativeallowed true` closes the Creative-mode loophole, there is no Survival equivalent. **[HARD]** (field-tested: identical cfg
+  enforced correctly in Creative, silently bypassed in Survival for the world's Admin-promoted owner)
 - The only chat command is `/br creativeallowed [true|false]` (no value toggles). It requires a promote level >= 4.
   **[HARD]** (`BR:588-655`). That level 4 means Admin is game-enum knowledge, not read here **[SOFT]**.
 
