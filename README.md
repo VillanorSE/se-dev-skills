@@ -14,6 +14,7 @@ Each skill is general-purpose: no project-specific content, nothing tied to any 
 | :--- | :--- |
 | [`se-dev-blockrestrictions`](se-dev-blockrestrictions/) | The Space Engineers [Block Restrictions](https://steamcommunity.com/sharedfiles/filedetails/?id=2053202808) mod: restricting blocks, default-settings ECs, the world cfg and log, debugging why a restriction didn't apply. |
 | [`se-dev-shipcore`](se-dev-shipcore/) | The Space Engineers [Ship Core Framework](https://steamcommunity.com/sharedfiles/filedetails/?id=3552595651) mod: core XMLs, manifest, block groups, no-core profile, block limits, world config, load failures. |
+| [`se-dev-reputation`](se-dev-reputation/) | Space Engineers faction reputation and NPC faction lifecycle: `StaticReputation`, vanilla damage/decay reputation, economy thresholds, MES reputation actions, why unwanted factions (e.g. `SPRT`) appear and removing them from a save. |
 
 ## Installing
 
