@@ -79,6 +79,7 @@ MES prefers agreeing the approach in an issue before code arrives. Other repos (
 - Name a new tag for what the modder sees and which grid runs it, not after an internal field: `ClearParentEscort`
   became `LeaveEscortSlot`, since "parent" didn't say whether it runs on the escort or the leader
   (MeridiusIX/Modular-Encounters-Systems#408).
+- When an existing tag or check is fundamentally broken or useless in practice, maintainers prefer fixing the core tag directly rather than adding a new opt-in tag (e.g. `MatchTerrainType` evaluating ground under the grid instead of player spawn coords, MeridiusIX/Modular-Encounters-Systems#440).
 - A bug fix found while building a feature goes in its own commit or issue.
 
 ## 2. Code conventions
@@ -92,6 +93,10 @@ MES prefers agreeing the approach in an issue before code arrives. Other repos (
   negation of `IsIdentityNPC` ("not NPC" is not "player"), and never `IsBot`; check names at HEAD;
   `TagParse.*Check` in the profile's `InitTags`.
 - Long-running work goes in its own class in `Tasks/`.
+- Multi-grid encounters: keep lifecycle tracking, despawn counters, and linked grid lists isolated per grid instance rather than shared across watcher objects (MeridiusIX/Modular-Encounters-Systems#431, MeridiusIX/Modular-Encounters-Systems#432).
+- Event flags: do not clear event/trigger flags during evaluation checks; clear them after all triggers in the update loop have finished evaluating (MeridiusIX/Modular-Encounters-Systems#405).
+- Floating-point comparisons: use tolerance deltas (e.g. `Vector3.DistanceSquared < 0.000001f` for color matching) rather than strict equality or string rounding to handle single-precision serialization differences (MeridiusIX/Modular-Encounters-Systems#457).
+- Operator precedence: always group mixed `&&` and `||` clauses with explicit parentheses (MeridiusIX/Modular-Encounters-Systems#421, MeridiusIX/Modular-Encounters-Systems#422).
 - No per-update allocations in autopilot/behavior code.
 
 ## 3. Chat commands
@@ -147,6 +152,11 @@ Audience: encounter modders and server admins.
 - Title: what changes, in MES terms (`Fix X for Y`, `Add Z`).
 - Description: `Fixes #n`, then short headed sections (e.g. Problem, Change, Testing) with a few clear lines each:
   what changed and why, and how it was tested in game (say what wasn't: dedicated server, multiplayer).
+- When a PR directly fixes an issue that already has an agreed root cause and analysis, omit the redundant "Problem"
+  recap. Lead with `Fixes #n` followed directly by `### Change` and `### Testing` (MeridiusIX/Modular-Encounters-Systems#460).
+- Under `### Change`: keep it high-level (the logical mechanism in a few sentences). Do not list out file-by-file line
+  diffs or granular code edits — the maintainer can view the GitHub "Files changed" diff directly.
+- In-game testing: describe the concrete test setup, values tested, and observed results.
 - Credit testers and whoever suggested the approach.
 - Before pushing: `git fetch upstream` and rebase onto current `master`. Work from a fork (`gh repo sync`), one branch
   per PR from the fork's `master`.

@@ -3,6 +3,60 @@
 One entry per PR: what was submitted, what the maintainer said, and the lesson. Newest first. Fold lessons into
 `SKILL.md`.
 
+## MeridiusIX/Modular-Encounters-Systems#460 Count 500 reputation as Friendly in relation and target checks (Mike Dude, 2026-10-27) - open
+
+- **Issue:** #350, enenra: "Good catch. A PR would be appreciated."
+- **Submitted:** Aligns MES with vanilla Space Engineers where 500 is `ReputationFriendlyMin`. MES previously used
+  `> 500` / `>= 501` in `EntityEvaluator`, `OwnershipHelper`, `ConditionProfile`, `BroadcastSystem`, `FactionHelper`,
+  and `ShipyardProfile`.
+- **Testing:** In-game test using a non-static faction (`SOBAN`) across all four threshold boundaries (+500, +499,
+  -500, -501) with broadcast author colors and damage trigger conditions; all passed.
+- **Lesson:** When an issue already contains an agreed root-cause analysis, keep the PR body ultra-lean: `Fixes #n`
+  followed directly by `### Change` and `### Testing`, omitting redundant problem essays and avoiding file-by-file line
+  bullet lists.
+
+## MeridiusIX/Modular-Encounters-Systems#459 Document missing Debug and Info chat commands in the wiki (Mike Dude, 2026-10-26) - merged 2026-10-26
+
+- **Issue:** #356 (missing chat commands).
+- **Submitted:** Documented debug and info commands (`/MES.Debug.GetKnownPlayerLocations`, `/MES.Debug.ForceDespawnMES`,
+  etc.) in `AdminConfig_AdminDebugOptions.md`. enenra merged directly without comments.
+- **Lesson:** Admin and debug commands should be documented strictly from what their implementation does in source,
+  keeping descriptions focused on practical server admin and modder utility.
+
+## MeridiusIX/Modular-Encounters-Systems#458 Fix in-page links in the wiki (Mike Dude, 2026-10-26) - merged 2026-10-26
+
+- **Issue:** #355 (broken anchor links).
+- **Submitted:** MkDocs generates lowercase heading ids (`#behaviordebug`), but category lists linked to CamelCase
+  heading names (`#BehaviorDebug`), breaking in-page browser jumps. Lowercased all anchor targets.
+- **Lesson:** In MkDocs / Python Markdown, heading anchors are generated lowercase; case-sensitive browsers fail to
+  jump if links retain mixed-case headings.
+
+## MeridiusIX/Modular-Encounters-Systems#457 Match RecolorGrid colors within 0.001 in manipulations and actions (Mike Dude, 2026-10-26) - merged 2026-10-26
+
+- **Issue:** #328 (color precision matching).
+- **Submitted:** Single-precision float discrepancies between prefab SBC files and user color vectors prevented
+  RecolorGrid from matching. Replaced exact float equality and 3-decimal rounding with a tolerance comparison
+  (`Vector3.DistanceSquared < 0.000001f` / `0.001f` per channel).
+- **Lesson:** Floating-point color comparisons (HSV/RGB) in modding must use tolerance deltas rather than strict
+  equality or string rounding to account for single-precision rounding differences in prefabs.
+
+## MeridiusIX/Modular-Encounters-Systems#456 Fix RecolorGrid removing the wrong block after part of the grid breaks off (Mike Dude, 2026-10-26) - merged 2026-10-26
+
+- **Issue:** #448 (RecolorGrid index mismatch on broken grids).
+- **Submitted:** In `RecolorBlocks`, iterating `AllBlocks` and removing invalid blocks from `AllTerminalBlocks` threw an
+  IndexOutOfRangeException or dropped unrelated terminal blocks. Fixed indexing to target the matching collection.
+- **Lesson:** Never mutate or remove by index from a secondary collection while iterating a primary collection of
+  different length.
+
+## MeridiusIX/Modular-Encounters-Systems#453 Add LimitPitchTurning autopilot tag (Mike Dude, 2026-10-25) - merged 2026-10-26
+
+- **Issue:** #450 (pitch looping when waypoint is behind grid).
+- **Submitted:** Adds `LimitPitchTurning` (default false) to autopilot. When true, pitch angle is capped when the target
+  is in the rear hemisphere so planes turn with yaw rather than diving into vertical loops. Follow-up commit skipped
+  nose-down pitch while the target is behind, preserving nose-up banking into turns.
+- **Lesson:** For 6-DOF vs aircraft steering quirks, provide opt-in autopilot tags (`LimitPitchTurning`) defaulting to
+  false; test both level flight and banked turns with waypoints directly behind and below.
+
 ## MeridiusIX/Modular-Encounters-Systems#452 RotateInstallations in degrees (VillanorSE, 2026-10-25) - issue, open
 
 - **Submitted:** feature issue: values are atan(value/45), so 90 needs a huge number and 180 is unreachable; asked
@@ -21,6 +75,168 @@ One entry per PR: what was submitted, what the maintainer said, and the lesson. 
 - **Owner:** posted as drafted. A companion feature draft (RotateInstallations in degrees) was held back as "too
   wordy": cut it to the need, the mechanism in one line and the proposed tag.
 
+## MeridiusIX/Modular-Encounters-Systems#449 Fix OffsetMaxAngleFromTarget picking a new direction on every autopilot update (Mike Dude, 2026-10-24) - merged 2026-10-24
+
+- **Issue:** #418 (offset direction jitter).
+- **Submitted:** `OffsetMaxAngleFromTarget` picked a new random direction on every tick, causing the waypoint to thrash
+  wildly. Fixed to select a random direction only when a new offset is requested.
+- **Lesson:** Autopilot offset randomization must persist across updates until a new waypoint or offset maneuver is
+  explicitly requested.
+
+## MeridiusIX/Modular-Encounters-Systems#447 Add the /MES.Spawn.StaticEncounter chat command (Mike Dude, 2026-10-24) - merged 2026-10-24
+
+- **Issue:** #334 (command alias `/MES.SSE` existed without a command handler).
+- **Submitted:** Implemented `/MES.Spawn.StaticEncounter.<GroupName>` using `ProcessStaticEncountersAtLocation` so
+  unspawned static encounters can be spawned immediately for testing without waiting for player proximity.
+- **Lesson:** When implementing missing admin command aliases, route through the exact execution pathway used by
+  natural triggers and existing reset commands.
+
+## MeridiusIX/Modular-Encounters-Systems#446 Add the vanilla TargetingGroups and TieredUpdateTimes to the older NPC thrusters (Mike Dude, 2026-10-23) - merged 2026-10-24
+
+- **Context:** Follow-up requested by enenra in #443 review ("A separate PR for the missing tags would be good").
+- **Submitted:** Added `TargetingGroups` and `TieredUpdateTimes` definitions to older MES NPC thrusters to match vanilla
+  thruster behavior and SE combat AI targeting.
+- **Lesson:** Keep cube block definition updates in dedicated PRs separate from new block additions; keep definitions
+  synchronized with vanilla SE updates.
+
+## MeridiusIX/Modular-Encounters-Systems#445 Skip weapon lead steering while escorting (Mike Dude, 2026-10-23) - merged 2026-10-24
+
+- **Issue:** #434 (escorts breaking formation when tracking moving targets).
+- **Submitted:** Autopilot weapon lead prediction steps (`UseProjectileLeadPrediction` and `UseCollisionLeadPrediction`)
+  overrode escort slot waypoints with predicted intercept coordinates. Added check to skip lead steering in escort mode.
+- **Lesson:** Autonomous behaviors (escorts, patrols) must explicitly gate low-level autopilot overrides that would
+  pull grids out of their assigned formation or path.
+
+## MeridiusIX/Modular-Encounters-Systems#444 Use EscortSpeedMatch distances to scale escort speed (Mike Dude, 2026-10-23) - merged 2026-10-24
+
+- **Issue:** #435 (escort speed scaling ignored config tags).
+- **Submitted:** Linked escort speed ramping directly to configured `EscortSpeedMatchMinDistance` and
+  `EscortSpeedMatchMaxDistance` tags rather than hardcoded distance thresholds.
+- **Lesson:** Verify configuration tags drive the underlying calculation; hardcoded fallback numbers in subsystem
+  math make tuning tags ineffective.
+
+## MeridiusIX/Modular-Encounters-Systems#443 Add NPC versions of the Core Systems Sci-Fi hydrogen and flat atmospheric thrusters (Mike Dude, 2026-10-23) - merged 2026-10-23
+
+- **Issue:** #428 (missing NPC variants of newer vanilla DLC thrusters).
+- **Submitted:** Added zero-fuel/zero-power NPC cube block definitions for Warfare 2 and Heavy Industry thruster subtypes.
+- **Lesson:** NPC cube block definitions should mirror vanilla mechanics while setting resource requirements
+  consistently with existing MES NPC block profiles.
+
+## MeridiusIX/Modular-Encounters-Systems#442 Match the vanilla remote control subtypes in ConvertAllRemoteControlBlocks (Mike Dude, 2026-10-23) - merged 2026-10-23
+
+- **Issue:** #433 (subtypes mismatched vanilla remote control definitions).
+- **Submitted:** Corrected subtype checks from `RemoteControlLarge`/`RemoteControlSmall` to
+  `LargeBlockRemoteControl`/`SmallBlockRemoteControl`.
+- **Lesson:** Always verify vanilla SBC `SubtypeId` strings against game definitions rather than relying on intuitive names.
+
+## MeridiusIX/Modular-Encounters-Systems#441 Add UseCommandWaypointAsPatrolReference and UseWaypointAsPatrolReference (Mike Dude, 2026-10-23) - merged 2026-10-23
+
+- **Issue:** #388 (patrol behavior fixed to initial spawn coordinate).
+- **Submitted:** Added tags allowing patrol reference anchors to follow command waypoints or custom waypoints, enabling
+  escorts and defenders to patrol around moving convoys or flagships.
+- **Lesson:** Anchor-based behaviors (patrol, wander) require dynamic reference points to support moving encounters.
+
+## MeridiusIX/Modular-Encounters-Systems#440 Check the terrain under the NPC in MatchTerrainType (Mike Dude, 2026-10-23) - merged 2026-10-24
+
+- **Issue:** #438 (terrain evaluation checked player position instead of NPC position).
+- **Review:** First draft proposed a new tag `MatchTerrainTypeAtCurrentPosition`. enenra asked to fix `MatchTerrainType`
+  directly: "In my mind, MatchTerrainType should *already* match at the current position. If that is not the case, that
+  sounds more like that should be fixed instead of a separate tag be added. ... As it is, without checking the current
+  position's terrain, it's pretty useless."
+- **Submitted (Rework):** Dropped the new tag and updated `MatchTerrainType` to evaluate the planetary voxel material
+  directly under the grid.
+- **Lesson:** When existing behavior is fundamentally flawed or useless, maintainers prefer fixing the core tag directly
+  rather than adding a new opt-in tag. Pivot cleanly when reviewer guidance favors modifying the original tag.
+
+## MeridiusIX/Modular-Encounters-Systems#437 Fix MatchTerrainType when the autopilot has no planet (Mike Dude, 2026-10-22) - merged 2026-10-22
+
+- **Submitted:** Added null guard for `PlanetEntity` in `MatchTerrainType` to prevent NullReferenceExceptions when
+  evaluating encounters in deep space.
+- **Lesson:** Any planet-relative check must guard against null `PlanetEntity`, as encounters frequently operate or
+  transition outside planetary gravity.
+
+## MeridiusIX/Modular-Encounters-Systems#432 Give each grid its own LinkedGrids list (Mike Dude, 2026-10-20) - merged 2026-10-21
+
+- **Issue:** #427 (shared linked grid lists caused duplicate entries and collection corruption).
+- **Submitted:** Instantiated a separate `LinkedGrids` list per grid in `GridWatchers`.
+- **Lesson:** Subgrid tracking collections must be allocated per instance, never shallow-copied or shared across
+  watcher objects.
+
+## MeridiusIX/Modular-Encounters-Systems#431 Track despawn attempts and DespawnMES actions per grid (Mike Dude, 2026-10-20) - merged 2026-10-21
+
+- **Issue:** #412 (despawn counters and actions leaking across subgrids).
+- **Submitted:** Scoped despawn attempt counters and action executions per grid rather than sharing state across
+  multi-grid assemblies.
+- **Lesson:** Multi-grid encounters require clean per-grid isolation for lifecycle actions (damage, despawn, triggers).
+
+## MeridiusIX/Modular-Encounters-Systems#430 Detect WeaponCore 2 flare ammo for UseAntiSmartWeapons (Mike Dude, 2026-10-20) - merged 2026-10-20
+
+- **Issue:** #380 (WeaponCore 2 countermeasure ammo changes).
+- **Submitted:** Added ammo subtype and definition checks for WeaponCore 2 flare and decoy projectiles in
+  `UseAntiSmartWeapons`.
+- **Lesson:** Third-party integrations (WeaponCore, Water Mod) need updates when external mods refactor internal
+  definitions; isolate mod-specific checks behind availability guards.
+
+## MeridiusIX/Modular-Encounters-Systems#429 Fix MatchTerrainType not counting as a used condition (Mike Dude, 2026-10-20) - merged 2026-10-20
+
+- **Issue:** #425 (`MatchTerrainType` did not increment `usedConditions` counter in `ConditionProfile`).
+- **Submitted:** Added counter increment when `MatchTerrainType` is configured.
+- **Lesson:** Whenever a condition check tag is implemented or refactored, verify it increments the condition evaluation
+  counter; otherwise triggers can evaluate true unconditionally.
+
+## MeridiusIX/Modular-Encounters-Systems#424 Fix ReportProfileError logging the same error on every call (Mike Dude, 2026-10-18) - merged 2026-10-19
+
+- **Submitted:** `ReportProfileError` checked `profileIdSafe` against `ErrorProfiles` using a mismatched string format
+  (`reason + ": [" + profileIdSafe + "]"` vs checked key), causing every call to miss the deduplication check and spam
+  the log. Aligned key formatting.
+- **Lesson:** Deduplication sets must use identical string formatting between key lookup and key insertion.
+
+## MeridiusIX/Modular-Encounters-Systems#423 Fix swapped green and blue channels in GPSColors and GPSColorVariables (Mike Dude, 2026-10-18) - merged 2026-10-19
+
+- **Issue:** #413 (GPS colors inverted green and blue channels).
+- **Submitted:** Corrected `color.B` and `color.G` assignments in `ActionSystem.cs` and `EventActionExecution.cs` where
+  vector Y and Z components were swapped.
+- **Lesson:** Vector3 to Color conversions: X=R, Y=G, Z=B. Double check component mappings when deserializing colors.
+
+## MeridiusIX/Modular-Encounters-Systems#422 Fix SendToAllOnlinePlayers skipping players with no character (Mike Dude, 2026-10-18) - merged 2026-10-19
+
+- **Issue:** #414 (operator precedence bug in chat broadcast).
+- **Submitted:** `!chat.SendToAllOnlinePlayers && FactionHelper.IsIdentityNPC(...) || player.Character == null` evaluated
+  `&&` before `||`, skipping dead or respawning players. Added grouping parentheses.
+- **Lesson:** Always group mixed boolean clauses (`&&` vs `||`) with parentheses to prevent operator precedence from
+  bypassing conditions.
+
+## MeridiusIX/Modular-Encounters-Systems#421 Fix StaticEncounterSpace check in SpawningTypeAllowedForGroup (Mike Dude, 2026-10-18) - merged 2026-10-19
+
+- **Issue:** #417 (operator precedence bug in static space encounter check).
+- **Submitted:** Missing parentheses in `type.HasFlag(StaticEncounterSpace) || type.HasFlag(StaticEncounterPlanet) && conditions.StaticEncounter`
+  caused planetary conditions to be bypassed in space. Grouped flag checks.
+- **Lesson:** Flag check expressions combining bitwise tests with logical operators must be grouped explicitly.
+
+## MeridiusIX/Modular-Encounters-Systems#420 Skip invalid events in EventActionExecution loops (Mike Dude, 2026-10-18) - merged 2026-10-19
+
+- **Issue:** #415 (NullReferenceException when loaded mods removed event templates).
+- **Submitted:** Checked `Event.Valid` before accessing `Event.Profile` in `EventActionExecution` loops.
+- **Lesson:** In persistent event/state managers, always guard against missing profile definitions by checking validity
+  flags before dereferencing.
+
+## MeridiusIX/Modular-Encounters-Systems#411 Fix DespawnMES trigger ignoring CleanUp and PathEnd (Mike Dude, 2026-10-17) - merged 2026-10-18
+
+- **Issue:** #387 (despawn trigger string matching failed for CleanUp and PathEnd).
+- **Submitted:** `ProcessMESDespawnTriggers` calculated category match flags for `CleanUp` and `PathEnd`, but the trigger
+  execution check only tested exact string equality on the full despawn source name (e.g. `CleanUp-Distance`). Fixed check
+  to use the computed match flag.
+- **Lesson:** When categorizing enum or string subtypes, ensure conditional logic checks the computed category flag
+  rather than requiring an exact string match on sub-types.
+
+## MeridiusIX/Modular-Encounters-Systems#410 Fix AllowTargetFarWithoutTarget evaluation in CheckTargetFar (Mike Dude, 2026-10-17) - merged 2026-10-17
+
+- **Issue:** #393 (tag checked in wrong method).
+- **Submitted:** `AllowTargetFarWithoutTarget` was checked inside `CheckTargetNear` instead of `CheckTargetFar`. Moved to
+  the correct method.
+- **Lesson:** Paired near/far or min/max methods are prone to copy-paste placement errors; check method signatures and
+  callers carefully.
+
 ## MeridiusIX/Modular-Encounters-Systems#408 Clean up invalid escort slots, ClearParentEscort action (Mike Dude, 2026-10-17) - merged 2026-10-18
 
 - **Review:** enenra asked for a rename: `ClearParentEscort` matched the internal field but didn't say whether it
@@ -30,6 +246,38 @@ One entry per PR: what was submitted, what the maintainer said, and the lesson. 
   with no leader, so no check was added.
 - **Lesson:** folded into SKILL.md section 1 (name a tag for what the modder sees and which grid runs it).
 - **Lesson:** answer a "does this need a safety check" question with the line that guarantees it, not just "no".
+
+## MeridiusIX/Modular-Encounters-Systems#406 Populate NPC identities before EntityWatcher scans world grids (Mike Dude, 2026-10-17) - merged 2026-10-17
+
+- **Issue:** #403 (NPC thrusters shut off on server reload with thrust restrictions).
+- **Submitted:** Grid entity scan on session reload occurred before NPC faction identities were cached, causing NPC
+  grids to be classified as non-NPC and shutting off thrusters. Ensured identity cache population runs first.
+- **Lesson:** Initialization order matters: ensure identity and cache population completes before entity watchers
+  evaluate grid rules or block restrictions.
+
+## MeridiusIX/Modular-Encounters-Systems#405 Do not clear target trigger flags during check (Mike Dude, 2026-10-17) - merged 2026-10-17
+
+- **Issue:** #394 (target trigger flags cleared on read, breaking multi-trigger setups).
+- **Submitted:** `AcquiredTarget`, `LostTarget`, `SwitchedTarget`, and `ChangedTarget` flags were cleared inside the check
+  itself, so only the first trigger in the list fired. Moved flag clearing to the end of the trigger update loop.
+- **Lesson:** Never clear event/state flags during trigger evaluation; clear them only after all active triggers have
+  completed their evaluation step.
+
+## MeridiusIX/Modular-Encounters-Systems#404 Clear escort relative dampening when parent invalid or leaving escort subclass (Mike Dude, 2026-10-17) - merged 2026-10-17
+
+- **Submitted:** Reset `RelativeDampeningEntity` to `null` when parent escort becomes invalid or grid transitions out of
+  escort mode.
+- **Lesson:** State variables linking an entity to a parent must be explicitly cleaned up when the parent entity is
+  despawned or destroyed.
+
+## MeridiusIX/Modular-Encounters-Systems#402 Use forward velocity in direct thrust speed checks (Mike Dude, 2026-10-17) - merged 2026-10-17
+
+- **Issue:** #392 (direct thrust runaway loop when moving backwards).
+- **Submitted:** `CalculateDirectForwardThrust` compared total velocity magnitude (`velocity.Length()`) to `MaxSpeed`.
+  Moving backwards triggered reverse thrusters to "slow down", which accelerated backwards infinitely. Changed to dot
+  product forward velocity.
+- **Lesson:** Velocity-based throttle control must use signed forward projection (dot product with heading vector),
+  never raw scalar speed magnitude.
 
 ## MeridiusIX/Modular-Encounters-Systems#363 Tags & Tokens wiki pages (Mike Dude, 2026-09-23) - open, start over
 
